@@ -32,7 +32,7 @@ def test_homepage_loads(client):
 def test_organize_rejects_missing_folder_path(client):
     response = client.post("/organize", json={})
 
-    assert response.status_code == 200
+    assert response.status_code == 400
     assert response.get_json()["success"] is False
     assert response.get_json()["error"] == "No folder path provided."
 
@@ -45,7 +45,7 @@ def test_organize_rejects_invalid_folder(client, tmp_path):
         json={"folder_path": invalid_path}
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 400
     assert response.get_json()["success"] is False
     assert response.get_json()["error"] == "Invalid folder path."
 

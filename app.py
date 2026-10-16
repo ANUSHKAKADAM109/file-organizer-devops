@@ -125,8 +125,9 @@ def organize_files(folder_path):
 
         return logs, None
 
-    except Exception as e:
-        return None, str(e)
+    except Exception:
+        app.logger.exception("An error occurred while organizing files.")
+        return None, "An unexpected error occurred while organizing the folder."
 
 
 @app.route("/health", methods=["GET"])
@@ -141,18 +142,43 @@ def index():
 
 @app.route("/organize", methods=["POST"])
 def organize():
-    data = request.get_json()
-    folder_path = data.get("folder_path", "").strip()
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({
+            "success": False,
+            "error": "A valid JSON object is required."
+        }), 400
+
+    folder_path = data.get("folder_path", "")
+
+    if not isinstance(folder_path, str):
+        return jsonify({
+            "success": False,
+            "error": "folder_path must be a string."
+        }), 400
+
+    folder_path = folder_path.strip()
 
     if not folder_path:
-        return jsonify({"success": False, "error": "No folder path provided."})
+        return jsonify({
+            "success": False,
+            "error": "No folder path provided."
+        }), 400
 
     logs, error = organize_files(folder_path)
 
     if error:
-        return jsonify({"success": False, "error": error})
+        return jsonify({
+            "success": False,
+            "error": error
+        }), 400
 
-    return jsonify({"success": True, "logs": logs, "total": len(logs)})
+    return jsonify({
+        "success": True,
+        "logs": logs,
+        "total": len(logs)
+    }), 200
 
 
 @app.route("/history")
