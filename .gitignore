@@ -1,0 +1,26 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local data
+prometheus-data/
+grafana-data/
+
+# Local backup
+app.py.backup
+
+# Evidence - curate screenshots for the portfolio later
+photographic evidence/
+evidence/
+
+grafana-backup/

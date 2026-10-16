@@ -1,0 +1,14 @@
+
+# Web framework
+flask>=3.0.0
+
+# Production WSGI server (required — replaces Flask dev server)
+gunicorn>=21.2.0
+
+# Add your other dependencies below
+# e.g.
+# flask-sqlalchemy>=3.1.0
+# flask-cors>=4.0.0
+# python-dotenv>=1.0.0
+prometheus-client>=0.21.0
+pytest>=8.0.0

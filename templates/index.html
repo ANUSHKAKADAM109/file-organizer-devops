@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>File Organizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">⬡</span>
+        <span class="brand-name">Organizer</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-tab="organize">
+          <span class="nav-icon">◈</span> Organize
+        </a>
+        <a href="#" class="nav-item" data-tab="history">
+          <span class="nav-icon">◉</span> History
+        </a>
+        <a href="#" class="nav-item" data-tab="categories">
+          <span class="nav-icon">◧</span> Categories
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Idle</span>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+
+      <!-- ORGANIZE TAB -->
+      <section class="tab-panel active" id="tab-organize">
+        <div class="page-header">
+          <h1 class="page-title">File Organizer</h1>
+          <p class="page-sub">Drop in a folder path and let the machine do the sorting.</p>
+        </div>
+
+        <div class="card input-card">
+          <label class="field-label">Folder Path</label>
+          <div class="input-row">
+            <input
+              type="text"
+              id="folderPath"
+              class="path-input"
+              placeholder="e.g.  C:\Users\You\Downloads"
+            />
+            <button class="btn-primary" id="organizeBtn" onclick="organizeFiles()">
+              <span id="btnLabel">Run</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+          <p class="field-hint">Paste the absolute path to the folder you want to organize.</p>
+        </div>
+
+        <!-- Results -->
+        <div class="card results-card" id="resultsCard" style="display:none">
+          <div class="results-header">
+            <span class="results-title">Results</span>
+            <span class="results-badge" id="resultCount">0 files</span>
+          </div>
+          <div class="log-list" id="logList"></div>
+        </div>
+
+        <!-- Error -->
+        <div class="card error-card" id="errorCard" style="display:none">
+          <span class="error-icon">⚠</span>
+          <span id="errorMsg"></span>
+        </div>
+      </section>
+
+      <!-- HISTORY TAB -->
+      <section class="tab-panel" id="tab-history">
+        <div class="page-header">
+          <h1 class="page-title">History</h1>
+          <p class="page-sub">Every move logged to CSV — nothing gets lost.</p>
+        </div>
+
+        <div class="card">
+          <div class="history-actions">
+            <button class="btn-ghost" onclick="loadHistory()">↻ Refresh</button>
+            <button class="btn-danger" onclick="clearHistory()">✕ Clear Log</button>
+          </div>
+          <div class="table-wrap">
+            <table class="log-table" id="historyTable">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>File</th>
+                  <th>Destination</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody">
+                <tr><td colspan="4" class="empty-row">No history yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- CATEGORIES TAB -->
+      <section class="tab-panel" id="tab-categories">
+        <div class="page-header">
+          <h1 class="page-title">Categories</h1>
+          <p class="page-sub">The sorting rules used by the organizer.</p>
+        </div>
+
+        <div class="categories-grid">
+          {% set icons = {"Images":"🖼", "Documents":"📄", "Videos":"🎬", "Music":"🎵", "Archives":"🗜"} %}
+          {% set exts = {
+            "Images": [".png",".jpg",".jpeg",".gif",".svg"],
+            "Documents": [".pdf",".docx",".txt",".xlsx",".pptx"],
+            "Videos": [".mp4",".mkv",".avi",".mov"],
+            "Music": [".mp3",".wav"],
+            "Archives": [".zip",".rar",".7z"]
+          } %}
+          {% for cat in categories %}
+          <div class="cat-card">
+            <div class="cat-icon">{{ icons.get(cat, "📁") }}</div>
+            <div class="cat-name">{{ cat }}</div>
+            <div class="cat-exts">
+              {% for ext in exts.get(cat, []) %}
+              <span class="ext-tag">{{ ext }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+          <div class="cat-card cat-other">
+            <div class="cat-icon">📦</div>
+            <div class="cat-name">Others</div>
+            <div class="cat-exts"><span class="ext-tag">everything else</span></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
