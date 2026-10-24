@@ -1,0 +1,20 @@
+groups:
+  - name: file-organizer-alerts
+    rules:
+      - alert: FileOrganizerDown
+        expr: up{job="file-organizer"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "File Organizer application is down"
+          description: "Prometheus cannot scrape the File Organizer metrics endpoint."
+
+      - alert: FileOrganizerHealthCheckFailed
+        expr: probe_success{job="file-organizer-health"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "File Organizer health check failed"
+          description: "The File Organizer health endpoint is reporting a failure."

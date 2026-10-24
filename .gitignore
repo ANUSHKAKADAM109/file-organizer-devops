@@ -24,3 +24,13 @@ photographic evidence/
 evidence/
 
 grafana-backup/
+
+# Terraform local state and working files
+terraform/.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.*
+terraform/crash.log
+terraform/crash.*.log
+
+# Local SMTP credentials
+monitoring/smtp_password.txt

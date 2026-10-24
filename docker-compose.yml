@@ -17,6 +17,7 @@ services:
       - "127.0.0.1:9090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alerts:/etc/prometheus/alerts:ro
       - prometheus-data:/prometheus
     depends_on:
       - app
@@ -31,6 +32,44 @@ services:
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
+    restart: unless-stopped
+
+  blackbox:
+    image: prom/blackbox-exporter:latest
+    container_name: blackbox
+    ports:
+      - "127.0.0.1:9115:9115"
+    volumes:
+      - ./monitoring/blackbox/config.yml:/etc/blackbox_exporter/config.yml:ro
+    command:
+      - "--config.file=/etc/blackbox_exporter/config.yml"
+    restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "127.0.0.1:9093:9093"
+    env_file:
+      - .env
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./monitoring/smtp_password.txt:/etc/alertmanager/smtp_password:ro
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+    restart: unless-stopped
+
+  webhook:
+    image: python:3.11-slim
+    container_name: alert-webhook
+    working_dir: /app
+    volumes:
+      - ./monitoring/webhook_receiver.py:/app/webhook_receiver.py:ro
+    command: >
+      sh -c "pip install --no-cache-dir flask &&
+             python webhook_receiver.py"
+    ports:
+      - "127.0.0.1:8000:8000"
     restart: unless-stopped
 
 volumes:

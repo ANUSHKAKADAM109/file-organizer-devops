@@ -38,3 +38,13 @@ docker-compose*.yml
 .env
 *.pem
 *.key
+
+# Local monitoring backups and evidence
+grafana-backup/
+photographic evidence/
+evidence/
+
+# Python test and cache files
+.pytest_cache/
+.coverage
+htmlcov/

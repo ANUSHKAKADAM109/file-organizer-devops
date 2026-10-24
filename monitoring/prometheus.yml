@@ -1,8 +1,34 @@
 global:
   scrape_interval: 15s
 
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+rule_files:
+  - "alerts/alert-rules.yml"
+
 scrape_configs:
+  # Collect application metrics
   - job_name: "file-organizer"
     metrics_path: /metrics
     static_configs:
       - targets: ["app:5000"]
+
+  # Check application health through Blackbox Exporter
+  - job_name: "file-organizer-health"
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - http://app:5000/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
