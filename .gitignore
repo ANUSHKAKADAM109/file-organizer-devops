@@ -34,3 +34,6 @@ terraform/crash.*.log
 
 # Local SMTP credentials
 monitoring/smtp_password.txt
+
+# Local Alertmanager configuration
+monitoring/alertmanager.yml
